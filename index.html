@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lingo Trail — Language Learning App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple-deep:#2E1B3D;
+    --purple-mid:#4A2E63;
+    --purple-light:#7A5590;
+    --brown:#B98457;
+    --brown-dark:#8A5E38;
+    --brown-pale:#F1E3D3;
+    --cream:#FAF3E8;
+    --ink:#2A1D33;
+    --success:#7DAD8B;
+    --error:#C46B5E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 12% 10%, rgba(185,132,87,0.10), transparent 42%),
+      radial-gradient(circle at 90% 88%, rgba(122,85,144,0.18), transparent 45%),
+      var(--purple-deep);
+    font-family:'Nunito Sans', sans-serif;
+    color:var(--cream);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:36px 16px 60px;
+  }
+
+  h1{
+    font-family:'DM Serif Display', serif;
+    font-weight:400;
+    font-size:38px;
+    margin:0 0 4px;
+    color:var(--cream);
+    letter-spacing:0.01em;
+  }
+  .sub{
+    font-size:14px;
+    color:var(--brown);
+    margin:0 0 32px;
+    text-align:center;
+    font-weight:600;
+    letter-spacing:0.02em;
+  }
+
+  .wrap{ width:min(94vw, 780px); }
+  .hidden{ display:none !important; }
+
+  /* ---------- Language picker ---------- */
+  .lang-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(126px, 1fr));
+    gap:14px;
+  }
+  .lang-card{
+    background:var(--purple-mid);
+    border:1.5px solid rgba(250,243,232,0.08);
+    border-radius:16px;
+    padding:20px 12px;
+    text-align:center;
+    cursor:pointer;
+    transition:transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  .lang-card:hover{ background:#5A3877; transform:translateY(-2px); border-color:var(--brown); }
+  .lang-flag{ font-size:32px; margin-bottom:8px; }
+  .lang-name{ font-weight:700; font-size:14.5px; }
+  .lang-native{ font-size:11px; color:var(--brown); margin-top:2px; }
+
+  /* ---------- Motivation / onboarding screen ---------- */
+  .motivation-card{
+    background:var(--cream);
+    color:var(--ink);
+    border-radius:22px;
+    padding:38px 30px;
+    text-align:center;
+    box-shadow:0 20px 44px -18px rgba(0,0,0,0.45);
+  }
+  .motivation-flag{ font-size:44px; margin-bottom:10px; }
+  .motivation-title{
+    font-family:'DM Serif Display', serif;
+    font-size:26px;
+    color:var(--purple-deep);
+    margin:0 0 6px;
+  }
+  .motivation-sub{
+    font-size:13.5px;
+    color:var(--brown-dark);
+    margin:0 0 26px;
+  }
+  .motivation-options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .motivation-opt{
+    background:var(--brown-pale);
+    border:2px solid transparent;
+    border-radius:14px;
+    padding:16px 12px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .motivation-opt span.emoji{ font-size:22px; }
+  .motivation-opt:hover{ border-color:var(--purple-mid); background:#EAD9C0; }
+
+  .motivation-response{
+    margin-top:24px;
+    display:none;
+  }
+  .motivation-response.show{ display:block; }
+  .motivation-response p{
+    font-size:14.5px;
+    color:var(--ink);
+    line-height:1.5;
+    margin:0 0 20px;
+  }
+  .start-btn{
+    background:var(--purple-deep);
+    color:var(--cream);
+    border:none;
+    padding:12px 28px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .start-btn:hover{ background:var(--purple-mid); }
+
+  .back-link{
+    display:block;
+    text-align:center;
+    margin-top:16px;
+    font-size:12.5px;
+    color:rgba(250,243,232,0.55);
+    cursor:pointer;
+    text-decoration:underline;
+  }
+
+  /* ---------- Course view ---------- */
+  .course-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .back-btn{
+    background:none;
+    border:1.5px solid var(--brown);
+    color:var(--brown);
+    padding:8px 16px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .back-btn:hover{ background:rgba(185,132,87,0.15); }
+
+  .progress-pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    color:var(--brown-pale);
+  }
+  .progress-track{
+    width:110px;
+    height:6px;
+    background:rgba(250,243,232,0.12);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--brown);
+    border-radius:4px;
+    transition:width 0.3s ease;
+  }
+
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .tab-btn{
+    background:var(--purple-mid);
+    border:1.5px solid transparent;
+    color:var(--brown-pale);
+    padding:9px 18px;
+    border-radius:999px;
+    font-size:13.5px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .tab-btn.active{ background:var(--brown); color:var(--purple-deep); }
+  .tab-btn:not(.active):hover{ border-color:var(--brown); }
+
+  /* ---------- Flashcard lesson ---------- */
+  .lesson-card{
+    background:var(--cream);
+    color:var(--ink);
+    border-radius:20px;
+    padding:36px 30px;
+    text-align:center;
+    box-shadow:0 20px 44px -18px rgba(0,0,0,0.45);
+    min-height:220px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    position:relative;
+  }
+  .lesson-category{
+    position:absolute;
+    top:16px; left:20px;
+    font-family:'Space Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--brown-dark);
+  }
+  .lesson-word{
+    font-family:'DM Serif Display', serif;
+    font-size:32px;
+    color:var(--purple-deep);
+  }
+  .lesson-pron{
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    color:var(--brown-dark);
+  }
+  .lesson-translation{
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+    margin-top:6px;
+  }
+  .speak-btn{
+    margin-top:10px;
+    width:42px; height:42px;
+    border-radius:50%;
+    background:var(--purple-mid);
+    color:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px;
+    border:none;
+    cursor:pointer;
+  }
+  .speak-btn:hover{ background:var(--purple-light); }
+
+  .lesson-nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    margin-top:20px;
+  }
+  .nav-btn{
+    width:44px; height:44px;
+    border-radius:50%;
+    background:var(--purple-mid);
+    color:var(--cream);
+    border:1.5px solid rgba(250,243,232,0.1);
+    font-size:16px;
+    cursor:pointer;
+  }
+  .nav-btn:hover:not(:disabled){ background:var(--purple-light); }
+  .nav-btn:disabled{ opacity:0.3; cursor:not-allowed; }
+  .lesson-count{
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    color:var(--brown-pale);
+  }
+
+  /* ---------- Grammar tips ---------- */
+  .grammar-list{ display:flex; flex-direction:column; gap:12px; }
+  .grammar-item{
+    background:var(--purple-mid);
+    border-radius:14px;
+    padding:16px 18px;
+    border-left:3px solid var(--brown);
+  }
+  .grammar-title{ font-weight:800; font-size:14.5px; margin-bottom:4px; color:var(--cream); }
+  .grammar-text{ font-size:13.5px; color:var(--brown-pale); line-height:1.5; }
+
+  /* ---------- Quiz ---------- */
+  .quiz-card{
+    background:var(--cream);
+    color:var(--ink);
+    border-radius:20px;
+    padding:30px 26px;
+    box-shadow:0 20px 44px -18px rgba(0,0,0,0.45);
+  }
+  .quiz-question{
+    font-family:'DM Serif Display', serif;
+    font-size:22px;
+    text-align:center;
+    margin-bottom:22px;
+    color:var(--purple-deep);
+  }
+  .quiz-options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .quiz-opt{
+    background:var(--brown-pale);
+    border:2px solid transparent;
+    border-radius:12px;
+    padding:14px 12px;
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--ink);
+    cursor:pointer;
+    text-align:center;
+  }
+  .quiz-opt:hover{ border-color:var(--brown); }
+  .quiz-opt.correct{ background:var(--success); color:#fff; }
+  .quiz-opt.wrong{ background:var(--error); color:#fff; }
+
+  .quiz-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:22px;
+  }
+  .quiz-score{
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    color:var(--purple-mid);
+  }
+  .next-quiz-btn{
+    background:var(--purple-deep);
+    color:var(--cream);
+    border:none;
+    padding:10px 20px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s ease;
+  }
+  .next-quiz-btn.show{ opacity:1; pointer-events:auto; }
+  .next-quiz-btn:hover{ background:var(--purple-mid); }
+
+  .quiz-done{
+    text-align:center;
+    padding:20px 0;
+  }
+  .quiz-done h3{
+    font-family:'DM Serif Display', serif;
+    font-size:26px;
+    color:var(--purple-deep);
+    margin:0 0 8px;
+  }
+  .quiz-done p{ color:var(--brown-dark); font-size:14px; }
+  .retry-btn{
+    margin-top:14px;
+    background:var(--purple-deep);
+    color:var(--cream);
+    border:none;
+    padding:10px 22px;
+    border-radius:999px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  footer{
+    margin-top:36px;
+    font-size:11px;
+    color:rgba(250,243,232,0.3);
+    text-align:center;
+  }
+
+  @media (max-width:480px){
+    .lesson-word{ font-size:26px; }
+    .quiz-options{ grid-template-columns:1fr; }
+    .motivation-options{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <h1>Lingo Trail</h1>
+  <p class="sub">Pick a language, follow the trail, learn a little every day</p>
+
+  <div class="wrap">
+
+    <!-- STEP 1: LANGUAGE PICKER -->
+    <div id="pickerView">
+      <div class="lang-grid" id="langGrid"></div>
+    </div>
+
+    <!-- STEP 2: MOTIVATION / ONBOARDING -->
+    <div id="motivationView" class="hidden">
+      <div class="motivation-card">
+        <div class="motivation-flag" id="motFlag">🌍</div>
+        <h2 class="motivation-title" id="motTitle">Why do you want to learn this?</h2>
+        <p class="motivation-sub">Pick what fits best — it just helps set the mood!</p>
+        <div class="motivation-options" id="motOptions"></div>
+        <div class="motivation-response" id="motResponse">
+          <p id="motResponseText"></p>
+          <button class="start-btn" id="startLearningBtn">Start Learning →</button>
+        </div>
+      </div>
+      <span class="back-link" id="motBackLink">← Choose a different language</span>
+    </div>
+
+    <!-- STEP 3: COURSE VIEW -->
+    <div id="courseView" class="hidden">
+      <div class="course-header">
+        <button class="back-btn" id="backBtn">← Change Language</button>
+        <div class="progress-pill">
+          <span id="progressLabel">0%</span>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="vocabulary">Vocabulary</button>
+        <button class="tab-btn" data-tab="phrases">Phrases</button>
+        <button class="tab-btn" data-tab="grammar">Grammar</button>
+        <button class="tab-btn" data-tab="quiz">Quiz</button>
+      </div>
+
+      <div id="lessonPane">
+        <div class="lesson-card">
+          <span class="lesson-category" id="lessonCategory">VOCABULARY</span>
+          <div class="lesson-word" id="lessonWord">&mdash;</div>
+          <div class="lesson-pron" id="lessonPron">&mdash;</div>
+          <div class="lesson-translation" id="lessonTranslation">&mdash;</div>
+          <button class="speak-btn" id="speakBtn" title="Hear pronunciation">&#128266;</button>
+        </div>
+        <div class="lesson-nav">
+          <button class="nav-btn" id="prevLessonBtn">←</button>
+          <span class="lesson-count" id="lessonCount">1 / 1</span>
+          <button class="nav-btn" id="nextLessonBtn">→</button>
+        </div>
+      </div>
+
+      <div id="grammarPane" class="hidden">
+        <div class="grammar-list" id="grammarList"></div>
+      </div>
+
+      <div id="quizPane" class="hidden">
+        <div class="quiz-card" id="quizCard"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Lingo Trail — a little language practice, every day</footer>
+
+<script>
+(function(){
+  const STORAGE_KEY = "lingotrail_progress";
+
+  const MOTIVATIONS = [
+    { key: "travel", emoji: "✈️", label: "Travel", response: "Perfect for exploring new places! We'll focus on words and phrases you'll actually use on the road." },
+    { key: "career", emoji: "💼", label: "Career", response: "Great choice — a new language can really open doors professionally. Let's build a strong foundation." },
+    { key: "culture", emoji: "🎭", label: "Culture & Movies", response: "Love that! Understanding the language brings you so much closer to the culture, films, and music." },
+    { key: "people", emoji: "❤️", label: "Connect with people", response: "That's a wonderful reason — language is really about connection. Let's get you talking." },
+    { key: "fun", emoji: "🎉", label: "Just for fun", response: "Love the enthusiasm! Learning for fun is one of the best ways to actually stick with it." },
+    { key: "curious", emoji: "✨", label: "Just curious", response: "Curiosity is a great place to start — let's see where it takes you!" },
+  ];
+
+  const LANGUAGES = {
+    spanish: {
+      name: "Spanish", native: "Espanol", flag: "\u{1F1EA}\u{1F1F8}", speechLang: "es-ES",
+      vocabulary: [
+        { word: "Hola", pron: "OH-lah", translation: "Hello" },
+        { word: "Gracias", pron: "GRAH-syahs", translation: "Thank you" },
+        { word: "Agua", pron: "AH-gwah", translation: "Water" },
+        { word: "Amigo", pron: "ah-MEE-goh", translation: "Friend" },
+        { word: "Comida", pron: "koh-MEE-dah", translation: "Food" },
+        { word: "Casa", pron: "KAH-sah", translation: "House" },
+        { word: "Libro", pron: "LEE-broh", translation: "Book" },
+        { word: "Feliz", pron: "feh-LEES", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Como estas?", pron: "KOH-moh es-TAHS", translation: "How are you?" },
+        { word: "Buenos dias", pron: "BWEH-nohs DEE-ahs", translation: "Good morning" },
+        { word: "Mucho gusto", pron: "MOO-choh GOOS-toh", translation: "Nice to meet you" },
+        { word: "Donde esta...?", pron: "DOHN-deh es-TAH", translation: "Where is...?" },
+        { word: "No entiendo", pron: "noh en-tee-EHN-doh", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Gendered nouns", text: "Spanish nouns are masculine or feminine - e.g. 'el libro' (the book) vs 'la casa' (the house)." },
+        { title: "Ser vs Estar", text: "Spanish has two verbs for 'to be': 'ser' for permanent traits, 'estar' for temporary states or location." },
+        { title: "Question marks", text: "Spanish questions start with an upside-down question mark: Como estas?" },
+      ],
+    },
+    french: {
+      name: "French", native: "Francais", flag: "\u{1F1EB}\u{1F1F7}", speechLang: "fr-FR",
+      vocabulary: [
+        { word: "Bonjour", pron: "bon-ZHOOR", translation: "Hello" },
+        { word: "Merci", pron: "mehr-SEE", translation: "Thank you" },
+        { word: "Eau", pron: "oh", translation: "Water" },
+        { word: "Ami", pron: "ah-MEE", translation: "Friend" },
+        { word: "Nourriture", pron: "noo-ree-TOOR", translation: "Food" },
+        { word: "Maison", pron: "meh-ZOHN", translation: "House" },
+        { word: "Livre", pron: "LEE-vruh", translation: "Book" },
+        { word: "Heureux", pron: "uh-RUH", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Comment ca va?", pron: "koh-mahn sah VAH", translation: "How are you?" },
+        { word: "Bon matin", pron: "bon mah-TAN", translation: "Good morning" },
+        { word: "Enchante", pron: "ahn-shahn-TAY", translation: "Nice to meet you" },
+        { word: "Ou est...?", pron: "oo eh", translation: "Where is...?" },
+        { word: "Je ne comprends pas", pron: "zhuh nuh kohm-prahn pah", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Gendered nouns", text: "French nouns are masculine or feminine - 'le' for masculine, 'la' for feminine." },
+        { title: "Silent letters", text: "Many final consonants in French are silent, like the 's' in 'francais'." },
+        { title: "Tu vs Vous", text: "'Tu' is informal, 'vous' is formal or plural - choose based on context." },
+      ],
+    },
+    german: {
+      name: "German", native: "Deutsch", flag: "\u{1F1E9}\u{1F1EA}", speechLang: "de-DE",
+      vocabulary: [
+        { word: "Hallo", pron: "HAH-loh", translation: "Hello" },
+        { word: "Danke", pron: "DAHN-kuh", translation: "Thank you" },
+        { word: "Wasser", pron: "VAH-ser", translation: "Water" },
+        { word: "Freund", pron: "FROYND", translation: "Friend" },
+        { word: "Essen", pron: "EH-sen", translation: "Food" },
+        { word: "Haus", pron: "HOWS", translation: "House" },
+        { word: "Buch", pron: "BOOKH", translation: "Book" },
+        { word: "Glucklich", pron: "GLUEK-likh", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Wie geht's?", pron: "vee GAYTS", translation: "How are you?" },
+        { word: "Guten Morgen", pron: "GOO-ten MOR-gen", translation: "Good morning" },
+        { word: "Freut mich", pron: "FROYT mikh", translation: "Nice to meet you" },
+        { word: "Wo ist...?", pron: "voh ist", translation: "Where is...?" },
+        { word: "Ich verstehe nicht", pron: "ikh fer-SHTAY-uh nikht", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Capitalized nouns", text: "All German nouns are capitalized, no matter where they appear in a sentence." },
+        { title: "Three genders", text: "German nouns are masculine (der), feminine (die), or neuter (das)." },
+        { title: "Verb-second order", text: "In a main clause, the conjugated verb is almost always the second element." },
+      ],
+    },
+    japanese: {
+      name: "Japanese", native: "Nihongo", flag: "\u{1F1EF}\u{1F1F5}", speechLang: "ja-JP",
+      vocabulary: [
+        { word: "Konnichiwa", pron: "kon-nee-chee-wah", translation: "Hello" },
+        { word: "Arigatou", pron: "ah-ree-gah-toh", translation: "Thank you" },
+        { word: "Mizu", pron: "mee-zoo", translation: "Water" },
+        { word: "Tomodachi", pron: "toh-moh-dah-chee", translation: "Friend" },
+        { word: "Tabemono", pron: "tah-beh-moh-noh", translation: "Food" },
+        { word: "Ie", pron: "ee-eh", translation: "House" },
+        { word: "Hon", pron: "hohn", translation: "Book" },
+        { word: "Shiawase", pron: "shee-ah-wah-seh", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Ogenki desu ka", pron: "oh-gen-kee deh-suh-kah", translation: "How are you?" },
+        { word: "Ohayou", pron: "oh-hah-yoh", translation: "Good morning" },
+        { word: "Hajimemashite", pron: "hah-jee-meh-mah-shee-teh", translation: "Nice to meet you" },
+        { word: "Doko desu ka", pron: "doh-koh deh-suh-kah", translation: "Where is it?" },
+        { word: "Wakarimasen", pron: "wah-kah-ree-mah-sen", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Subject-Object-Verb order", text: "Japanese sentences typically end with the verb, unlike English." },
+        { title: "Particles", text: "Small words like 'wa', 'ga', and 'wo' mark the role of each word in a sentence." },
+        { title: "No plural forms", text: "Japanese nouns usually don't change between singular and plural." },
+      ],
+    },
+    urdu: {
+      name: "Urdu", native: "Urdu", flag: "\u{1F1F5}\u{1F1F0}", speechLang: "ur-PK",
+      vocabulary: [
+        { word: "Salaam", pron: "sa-laam", translation: "Hello" },
+        { word: "Shukriya", pron: "shuk-ri-ya", translation: "Thank you" },
+        { word: "Paani", pron: "paa-nee", translation: "Water" },
+        { word: "Dost", pron: "dost", translation: "Friend" },
+        { word: "Khaana", pron: "khaa-naa", translation: "Food" },
+        { word: "Ghar", pron: "ghar", translation: "House" },
+        { word: "Kitaab", pron: "ki-taab", translation: "Book" },
+        { word: "Khush", pron: "khush", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Aap kaise hain?", pron: "aap kai-se hain", translation: "How are you?" },
+        { word: "Subah bakhair", pron: "sub-h ba-khair", translation: "Good morning" },
+        { word: "Khushi hui", pron: "khu-shi hu-ee", translation: "Nice to meet you" },
+        { word: "Kahan hai?", pron: "ka-haan hai", translation: "Where is it?" },
+        { word: "Mujhe samajh nahi aaya", pron: "mu-jhe sam-jh na-heen aa-ya", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Right-to-left script", text: "Urdu is written right-to-left using the Perso-Arabic script." },
+        { title: "Subject-Object-Verb order", text: "Like Japanese, Urdu sentences typically end with the verb." },
+        { title: "Gendered verbs", text: "Verbs change form depending on whether the subject is masculine or feminine." },
+      ],
+    },
+    turkish: {
+      name: "Turkish", native: "Turkce", flag: "\u{1F1F9}\u{1F1F7}", speechLang: "tr-TR",
+      vocabulary: [
+        { word: "Merhaba", pron: "mehr-hah-BAH", translation: "Hello" },
+        { word: "Tesekkurler", pron: "teh-shek-kewr-LEHR", translation: "Thank you" },
+        { word: "Su", pron: "soo", translation: "Water" },
+        { word: "Arkadas", pron: "ahr-kah-DASH", translation: "Friend" },
+        { word: "Yemek", pron: "yeh-MEHK", translation: "Food" },
+        { word: "Ev", pron: "ehv", translation: "House" },
+        { word: "Kitap", pron: "kee-TAHP", translation: "Book" },
+        { word: "Mutlu", pron: "moot-LOO", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Nasilsin?", pron: "nah-suhl-SUHN", translation: "How are you?" },
+        { word: "Gunaydin", pron: "gew-nahy-DUHN", translation: "Good morning" },
+        { word: "Memnun oldum", pron: "mem-NOON ohl-DOOM", translation: "Nice to meet you" },
+        { word: "Nerede...?", pron: "neh-reh-DEH", translation: "Where is...?" },
+        { word: "Anlamiyorum", pron: "ahn-lah-muh-yoh-ROOM", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Agglutinative language", text: "Turkish builds words by stacking suffixes onto a root, so one word can carry a lot of meaning." },
+        { title: "Vowel harmony", text: "Suffix vowels change to match the vowels already in the word, keeping pronunciation smooth." },
+        { title: "No grammatical gender", text: "Unlike Spanish or German, Turkish nouns don't have gender." },
+      ],
+    },
+    english: {
+      name: "English", native: "English", flag: "\u{1F1EC}\u{1F1E7}", speechLang: "en-US",
+      vocabulary: [
+        { word: "Hello", pron: "heh-LOH", translation: "A greeting" },
+        { word: "Thank you", pron: "THANK yoo", translation: "Expression of gratitude" },
+        { word: "Water", pron: "WAH-ter", translation: "H2O, a drink" },
+        { word: "Friend", pron: "FREND", translation: "A close companion" },
+        { word: "Food", pron: "FOOD", translation: "Something you eat" },
+        { word: "House", pron: "HOWS", translation: "A place you live" },
+        { word: "Book", pron: "BOOK", translation: "Something you read" },
+        { word: "Happy", pron: "HAP-ee", translation: "Feeling good" },
+      ],
+      phrases: [
+        { word: "How are you?", pron: "how ar YOO", translation: "A greeting asking about wellbeing" },
+        { word: "Good morning", pron: "good MOR-ning", translation: "A morning greeting" },
+        { word: "Nice to meet you", pron: "nys too MEET yoo", translation: "Said when meeting someone new" },
+        { word: "Where is...?", pron: "wair iz", translation: "Asking for a location" },
+        { word: "I don't understand", pron: "y dohnt un-der-STAND", translation: "Expressing confusion" },
+      ],
+      grammar: [
+        { title: "Subject-Verb-Object order", text: "English sentences are typically ordered Subject-Verb-Object, e.g. 'She (S) reads (V) books (O)'." },
+        { title: "Auxiliary verbs", text: "Words like 'do' and 'does' are used to form questions and negatives, e.g. 'Do you like it?'" },
+        { title: "Articles: a, an, the", text: "'A'/'an' introduce something general, 'the' refers to something specific." },
+      ],
+    },
+    korean: {
+      name: "Korean", native: "Hangugeo", flag: "\u{1F1F0}\u{1F1F7}", speechLang: "ko-KR",
+      vocabulary: [
+        { word: "Annyeonghaseyo", pron: "ahn-nyawng-hah-seh-yoh", translation: "Hello" },
+        { word: "Gamsahamnida", pron: "gahm-sah-hahm-nee-dah", translation: "Thank you" },
+        { word: "Mul", pron: "mool", translation: "Water" },
+        { word: "Chingu", pron: "cheen-goo", translation: "Friend" },
+        { word: "Eumsik", pron: "uhm-shik", translation: "Food" },
+        { word: "Jip", pron: "jeep", translation: "House" },
+        { word: "Chaek", pron: "chek", translation: "Book" },
+        { word: "Haengbokhan", pron: "haeng-boh-khan", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Eotteoke jinaeseyo?", pron: "uh-ttuh-kheh jee-nae-seh-yoh", translation: "How are you?" },
+        { word: "Joeun achim-ieyo", pron: "joh-eun ah-cheem-ee-eh-yoh", translation: "Good morning" },
+        { word: "Mannaseo bangapseumnida", pron: "man-nah-seo bahn-gahp-seum-nee-dah", translation: "Nice to meet you" },
+        { word: "Eodie isseoyo?", pron: "uh-dee-eh ee-ssuh-yoh", translation: "Where is it?" },
+        { word: "Ihaega an dwaeyo", pron: "ee-hae-ga ahn dwae-yoh", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Subject-Object-Verb order", text: "Like Japanese, Korean sentences typically end with the verb." },
+        { title: "Honorifics", text: "Korean has different speech levels depending on who you're talking to - formal, polite, or casual." },
+        { title: "Particles", text: "Small attached particles mark the subject, object, and topic of a sentence." },
+      ],
+    },
+    chinese: {
+      name: "Chinese", native: "Zhongwen", flag: "\u{1F1E8}\u{1F1F3}", speechLang: "zh-CN",
+      vocabulary: [
+        { word: "Ni hao", pron: "nee how", translation: "Hello" },
+        { word: "Xiexie", pron: "shyeh-shyeh", translation: "Thank you" },
+        { word: "Shui", pron: "shway", translation: "Water" },
+        { word: "Pengyou", pron: "pung-yoh", translation: "Friend" },
+        { word: "Shiwu", pron: "shr-woo", translation: "Food" },
+        { word: "Fangzi", pron: "fahng-dzuh", translation: "House" },
+        { word: "Shu", pron: "shoo", translation: "Book" },
+        { word: "Kaixin", pron: "kai-sheen", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Ni hao ma?", pron: "nee how mah", translation: "How are you?" },
+        { word: "Zaoshang hao", pron: "dzow-shahng how", translation: "Good morning" },
+        { word: "Hen gaoxing renshi ni", pron: "hun gow-shing run-shr nee", translation: "Nice to meet you" },
+        { word: "...zai nali?", pron: "dzai nah-lee", translation: "Where is...?" },
+        { word: "Wo bu mingbai", pron: "waw boo ming-bye", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Tonal language", text: "Mandarin has 4 tones - the same syllable can mean different things depending on the tone used." },
+        { title: "No verb conjugation", text: "Verbs don't change form for tense or subject; time words show when something happens." },
+        { title: "Measure words", text: "A 'measure word' is needed between a number and a noun, e.g. 'yi ben shu' (one [measure] book)." },
+      ],
+    },
+    italian: {
+      name: "Italian", native: "Italiano", flag: "\u{1F1EE}\u{1F1F9}", speechLang: "it-IT",
+      vocabulary: [
+        { word: "Ciao", pron: "CHOW", translation: "Hello" },
+        { word: "Grazie", pron: "GRAH-tsyeh", translation: "Thank you" },
+        { word: "Acqua", pron: "AH-kwah", translation: "Water" },
+        { word: "Amico", pron: "ah-MEE-koh", translation: "Friend" },
+        { word: "Cibo", pron: "CHEE-boh", translation: "Food" },
+        { word: "Casa", pron: "KAH-zah", translation: "House" },
+        { word: "Libro", pron: "LEE-broh", translation: "Book" },
+        { word: "Felice", pron: "feh-LEE-cheh", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Come stai?", pron: "KOH-meh sty", translation: "How are you?" },
+        { word: "Buongiorno", pron: "bwohn-JOR-noh", translation: "Good morning" },
+        { word: "Piacere", pron: "pyah-CHEH-reh", translation: "Nice to meet you" },
+        { word: "Dov'e...?", pron: "doh-VEH", translation: "Where is...?" },
+        { word: "Non capisco", pron: "nohn kah-PEE-skoh", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Gendered nouns", text: "Italian nouns are masculine or feminine - 'il' for masculine, 'la' for feminine." },
+        { title: "Rolled R", text: "The Italian 'r' is typically rolled or trilled, different from the English 'r'." },
+        { title: "Verb conjugation", text: "Verb endings change based on the subject, so pronouns are often dropped entirely." },
+      ],
+    },
+    arabic: {
+      name: "Arabic", native: "Al-Arabiya", flag: "\u{1F1F8}\u{1F1E6}", speechLang: "ar-SA",
+      vocabulary: [
+        { word: "Marhaba", pron: "MAR-ha-ba", translation: "Hello" },
+        { word: "Shukran", pron: "SHOOK-ran", translation: "Thank you" },
+        { word: "Ma'a", pron: "MAH-ah", translation: "Water" },
+        { word: "Sadiq", pron: "SAH-deek", translation: "Friend" },
+        { word: "Ta'am", pron: "tah-AAM", translation: "Food" },
+        { word: "Bayt", pron: "bait", translation: "House" },
+        { word: "Kitab", pron: "kee-TAAB", translation: "Book" },
+        { word: "Sa'eed", pron: "sah-EED", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Kayfa haluk?", pron: "KAY-fa HAH-look", translation: "How are you?" },
+        { word: "Sabah al-khayr", pron: "sah-BAH al-KHAIR", translation: "Good morning" },
+        { word: "Tasharrafna", pron: "tah-shar-RAF-na", translation: "Nice to meet you" },
+        { word: "Ayna...?", pron: "AY-na", translation: "Where is...?" },
+        { word: "La afham", pron: "la AF-ham", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Right-to-left script", text: "Arabic is written and read from right to left." },
+        { title: "Root letter system", text: "Most words are built from a 3-letter root that carries the core meaning." },
+        { title: "No capital letters", text: "Arabic script has no concept of uppercase or lowercase letters." },
+      ],
+    },
+    russian: {
+      name: "Russian", native: "Russkiy", flag: "\u{1F1F7}\u{1F1FA}", speechLang: "ru-RU",
+      vocabulary: [
+        { word: "Privet", pron: "pree-VYET", translation: "Hello" },
+        { word: "Spasibo", pron: "spah-SEE-bah", translation: "Thank you" },
+        { word: "Voda", pron: "vah-DAH", translation: "Water" },
+        { word: "Drug", pron: "droog", translation: "Friend" },
+        { word: "Yeda", pron: "yeh-DAH", translation: "Food" },
+        { word: "Dom", pron: "dohm", translation: "House" },
+        { word: "Kniga", pron: "KNEE-gah", translation: "Book" },
+        { word: "Schastlivyy", pron: "shas-LEE-vyy", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Kak dela?", pron: "kahk dee-LAH", translation: "How are you?" },
+        { word: "Dobroye utro", pron: "DOH-broh-yeh OO-troh", translation: "Good morning" },
+        { word: "Priyatno poznakomitsya", pron: "pree-YAHT-noh pohz-nah-KOH-meet-sya", translation: "Nice to meet you" },
+        { word: "Gde...?", pron: "gdyeh", translation: "Where is...?" },
+        { word: "Ya ne ponimayu", pron: "yah nyeh poh-nee-MY-yoo", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Cyrillic alphabet", text: "Russian uses the Cyrillic script, different from the Latin alphabet." },
+        { title: "Six grammatical cases", text: "Noun endings change depending on their role in the sentence (subject, object, etc.)." },
+        { title: "No articles", text: "Russian has no words for 'a', 'an', or 'the' - context tells you what's meant." },
+      ],
+    },
+    portuguese: {
+      name: "Portuguese", native: "Portugues", flag: "\u{1F1F5}\u{1F1F9}", speechLang: "pt-PT",
+      vocabulary: [
+        { word: "Ola", pron: "oh-LAH", translation: "Hello" },
+        { word: "Obrigado", pron: "oh-bree-GAH-doo", translation: "Thank you" },
+        { word: "Agua", pron: "AH-gwah", translation: "Water" },
+        { word: "Amigo", pron: "ah-MEE-goo", translation: "Friend" },
+        { word: "Comida", pron: "koh-MEE-dah", translation: "Food" },
+        { word: "Casa", pron: "KAH-zah", translation: "House" },
+        { word: "Livro", pron: "LEE-vroo", translation: "Book" },
+        { word: "Feliz", pron: "feh-LEESH", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Como voce esta?", pron: "KOH-moo voh-SEH es-TAH", translation: "How are you?" },
+        { word: "Bom dia", pron: "bohm DEE-ah", translation: "Good morning" },
+        { word: "Muito prazer", pron: "MOO-ee-too prah-ZEHR", translation: "Nice to meet you" },
+        { word: "Onde esta...?", pron: "OHN-jee es-TAH", translation: "Where is...?" },
+        { word: "Nao entendo", pron: "now en-TEN-doo", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Gendered nouns", text: "Portuguese nouns are masculine or feminine - 'o' for masculine, 'a' for feminine." },
+        { title: "Nasal vowels", text: "Portuguese has nasal vowel sounds, often marked with a tilde, like in 'nao'." },
+        { title: "Two main varieties", text: "European and Brazilian Portuguese differ in pronunciation, some vocabulary, and grammar." },
+      ],
+    },
+    hindi: {
+      name: "Hindi", native: "Hindi", flag: "\u{1F1EE}\u{1F1F3}", speechLang: "hi-IN",
+      vocabulary: [
+        { word: "Namaste", pron: "nuh-mus-TAY", translation: "Hello" },
+        { word: "Dhanyavaad", pron: "dhun-yuh-VAAD", translation: "Thank you" },
+        { word: "Paani", pron: "PAA-nee", translation: "Water" },
+        { word: "Dost", pron: "dohst", translation: "Friend" },
+        { word: "Khaana", pron: "KHAA-naa", translation: "Food" },
+        { word: "Ghar", pron: "ghurr", translation: "House" },
+        { word: "Kitaab", pron: "ki-TAAB", translation: "Book" },
+        { word: "Khush", pron: "khoosh", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Aap kaise hain?", pron: "aap KAI-say hain", translation: "How are you?" },
+        { word: "Suprabhat", pron: "soo-prub-HAAT", translation: "Good morning" },
+        { word: "Aapse milkar khushi hui", pron: "AAP-say MIL-kar khoo-SHEE hoo-EE", translation: "Nice to meet you" },
+        { word: "Kahan hai?", pron: "kuh-HAAN hai", translation: "Where is it?" },
+        { word: "Mujhe samajh nahi aaya", pron: "moo-JHAY suh-MUJH nuh-HEE aa-YAA", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Subject-Object-Verb order", text: "Hindi sentences typically end with the verb, e.g. 'Main khaana khaata hoon' (I food eat)." },
+        { title: "Gendered nouns and verbs", text: "Nouns and their matching verbs change form based on masculine or feminine gender." },
+        { title: "Devanagari script", text: "Hindi is written in the Devanagari script, read left to right." },
+      ],
+    },
+    persian: {
+      name: "Persian", native: "Farsi", flag: "\u{1F1EE}\u{1F1F7}", speechLang: "fa-IR",
+      vocabulary: [
+        { word: "Salaam", pron: "sah-LAAM", translation: "Hello" },
+        { word: "Moteshakkeram", pron: "mo-te-shak-ker-AM", translation: "Thank you" },
+        { word: "Ab", pron: "aab", translation: "Water" },
+        { word: "Doost", pron: "doost", translation: "Friend" },
+        { word: "Ghazaa", pron: "gha-ZAA", translation: "Food" },
+        { word: "Khaaneh", pron: "khaa-NEH", translation: "House" },
+        { word: "Ketaab", pron: "ke-TAAB", translation: "Book" },
+        { word: "Khoshhaal", pron: "khosh-HAAL", translation: "Happy" },
+      ],
+      phrases: [
+        { word: "Haale shomaa chetor ast?", pron: "haa-le sho-MAA che-TOR ast", translation: "How are you?" },
+        { word: "Sobh bekheir", pron: "sobh be-KHEIR", translation: "Good morning" },
+        { word: "Khoshbakhtam", pron: "khosh-BAKH-tam", translation: "Nice to meet you" },
+        { word: "Kojaast?", pron: "ko-JAAST", translation: "Where is it?" },
+        { word: "Nemifahmam", pron: "ne-mi-fah-MAM", translation: "I don't understand" },
+      ],
+      grammar: [
+        { title: "Right-to-left script", text: "Persian uses the Perso-Arabic script, written and read from right to left." },
+        { title: "No grammatical gender", text: "Unlike Arabic, Persian nouns don't have masculine or feminine gender." },
+        { title: "Subject-Object-Verb order", text: "Persian sentences typically end with the verb, similar to Urdu and Hindi." },
+      ],
+    },
+  };
+
+  let currentLang = null;
+  let currentTab = "vocabulary";
+  let lessonIndex = 0;
+  let quizPool = [];
+  let quizIndex = 0;
+  let quizScore = 0;
+  let quizAnswered = false;
+
+  const langGrid       = document.getElementById("langGrid");
+  const pickerView      = document.getElementById("pickerView");
+  const motivationView   = document.getElementById("motivationView");
+  const courseView       = document.getElementById("courseView");
+  const backBtn         = document.getElementById("backBtn");
+  const progressFill    = document.getElementById("progressFill");
+  const progressLabel   = document.getElementById("progressLabel");
+
+  const motFlag         = document.getElementById("motFlag");
+  const motTitle        = document.getElementById("motTitle");
+  const motOptions      = document.getElementById("motOptions");
+  const motResponse     = document.getElementById("motResponse");
+  const motResponseText = document.getElementById("motResponseText");
+  const startLearningBtn= document.getElementById("startLearningBtn");
+  const motBackLink     = document.getElementById("motBackLink");
+
+  const lessonPane      = document.getElementById("lessonPane");
+  const grammarPane     = document.getElementById("grammarPane");
+  const quizPane        = document.getElementById("quizPane");
+
+  const lessonCategory  = document.getElementById("lessonCategory");
+  const lessonWord       = document.getElementById("lessonWord");
+  const lessonPron        = document.getElementById("lessonPron");
+  const lessonTranslation = document.getElementById("lessonTranslation");
+  const lessonCount       = document.getElementById("lessonCount");
+  const prevLessonBtn      = document.getElementById("prevLessonBtn");
+  const nextLessonBtn      = document.getElementById("nextLessonBtn");
+  const speakBtn            = document.getElementById("speakBtn");
+  const grammarList          = document.getElementById("grammarList");
+  const quizCard               = document.getElementById("quizCard");
+
+  function loadProgress(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+  function saveProgress(p){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }catch(e){}
+  }
+  let progress = loadProgress();
+
+  function renderLangGrid(){
+    langGrid.innerHTML = Object.entries(LANGUAGES).map(([key, lang]) => `
+      <div class="lang-card" data-key="${key}">
+        <div class="lang-flag">${lang.flag}</div>
+        <div class="lang-name">${lang.name}</div>
+        <div class="lang-native">${lang.native}</div>
+      </div>
+    `).join("");
+
+    langGrid.querySelectorAll(".lang-card").forEach(card => {
+      card.addEventListener("click", () => openMotivation(card.dataset.key));
+    });
+  }
+
+  function renderMotivationOptions(){
+    motOptions.innerHTML = MOTIVATIONS.map(m => `
+      <button class="motivation-opt" data-key="${m.key}">
+        <span class="emoji">${m.emoji}</span>
+        <span>${m.label}</span>
+      </button>
+    `).join("");
+
+    motOptions.querySelectorAll(".motivation-opt").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const chosen = MOTIVATIONS.find(m => m.key === btn.dataset.key);
+        motResponseText.textContent = chosen.response;
+        motResponse.classList.add("show");
+      });
+    });
+  }
+
+  function openMotivation(key){
+    currentLang = key;
+    const lang = LANGUAGES[key];
+    motFlag.textContent = lang.flag;
+    motTitle.textContent = `Why do you want to learn ${lang.name}?`;
+    motResponse.classList.remove("show");
+    pickerView.classList.add("hidden");
+    motivationView.classList.remove("hidden");
+    courseView.classList.add("hidden");
+  }
+
+  function openCourse(){
+    lessonIndex = 0;
+    currentTab = "vocabulary";
+    motivationView.classList.add("hidden");
+    courseView.classList.remove("hidden");
+    setActiveTab("vocabulary");
+    updateProgress();
+  }
+
+  function updateProgress(){
+    const seen = (progress[currentLang] && progress[currentLang].seen) || {};
+    const total = LANGUAGES[currentLang].vocabulary.length + LANGUAGES[currentLang].phrases.length;
+    const seenCount = Object.keys(seen).length;
+    const pct = total ? Math.round((seenCount / total) * 100) : 0;
+    progressFill.style.width = pct + "%";
+    progressLabel.textContent = pct + "%";
+  }
+
+  function markSeen(category, index){
+    if(!progress[currentLang]) progress[currentLang] = { seen: {} };
+    progress[currentLang].seen[category + "-" + index] = true;
+    saveProgress(progress);
+    updateProgress();
+  }
+
+  function setActiveTab(tab){
+    currentTab = tab;
+    document.querySelectorAll(".tab-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.tab === tab);
+    });
+
+    lessonPane.classList.add("hidden");
+    grammarPane.classList.add("hidden");
+    quizPane.classList.add("hidden");
+
+    if(tab === "vocabulary" || tab === "phrases"){
+      lessonIndex = 0;
+      lessonPane.classList.remove("hidden");
+      renderLesson();
+    } else if(tab === "grammar"){
+      grammarPane.classList.remove("hidden");
+      renderGrammar();
+    } else if(tab === "quiz"){
+      quizPane.classList.remove("hidden");
+      startQuiz();
+    }
+  }
+
+  function renderLesson(){
+    const list = LANGUAGES[currentLang][currentTab];
+    const item = list[lessonIndex];
+    lessonCategory.textContent = currentTab.toUpperCase();
+    lessonWord.textContent = item.word;
+    lessonPron.textContent = "/ " + item.pron + " /";
+    lessonTranslation.textContent = item.translation;
+    lessonCount.textContent = (lessonIndex + 1) + " / " + list.length;
+    prevLessonBtn.disabled = lessonIndex === 0;
+    nextLessonBtn.disabled = lessonIndex === list.length - 1;
+    markSeen(currentTab, lessonIndex);
+  }
+
+  function renderGrammar(){
+    const tips = LANGUAGES[currentLang].grammar;
+    grammarList.innerHTML = tips.map(t => `
+      <div class="grammar-item">
+        <div class="grammar-title">${t.title}</div>
+        <div class="grammar-text">${t.text}</div>
+      </div>
+    `).join("");
+  }
+
+  function buildQuizPool(){
+    const lang = LANGUAGES[currentLang];
+    const all = [...lang.vocabulary, ...lang.phrases];
+    const shuffled = [...all].sort(() => Math.random() - 0.5).slice(0, 6);
+    return shuffled.map(correct => {
+      const wrongPool = all.filter(x => x.translation !== correct.translation);
+      const wrongs = [...wrongPool].sort(() => Math.random() - 0.5).slice(0, 3);
+      const options = [...wrongs, correct].sort(() => Math.random() - 0.5);
+      return { word: correct.word, answer: correct.translation, options: options.map(o => o.translation) };
+    });
+  }
+
+  function startQuiz(){
+    quizPool = buildQuizPool();
+    quizIndex = 0;
+    quizScore = 0;
+    renderQuizQuestion();
+  }
+
+  function renderQuizQuestion(){
+    quizAnswered = false;
+    if(quizIndex >= quizPool.length){
+      quizCard.innerHTML = `
+        <div class="quiz-done">
+          <h3>Nice work!</h3>
+          <p>You scored ${quizScore} out of ${quizPool.length}</p>
+          <button class="retry-btn" id="retryBtn">Try Again</button>
+        </div>`;
+      document.getElementById("retryBtn").addEventListener("click", startQuiz);
+      return;
+    }
+
+    const q = quizPool[quizIndex];
+    quizCard.innerHTML = `
+      <div class="quiz-question">What does "${q.word}" mean?</div>
+      <div class="quiz-options">
+        ${q.options.map(opt => `<button class="quiz-opt" data-opt="${opt}">${opt}</button>`).join("")}
+      </div>
+      <div class="quiz-footer">
+        <span class="quiz-score">Score: ${quizScore} / ${quizPool.length} &middot; Q${quizIndex + 1}/${quizPool.length}</span>
+        <button class="next-quiz-btn" id="nextQuizBtn">Next →</button>
+      </div>
+    `;
+
+    quizCard.querySelectorAll(".quiz-opt").forEach(btn => {
+      btn.addEventListener("click", () => handleQuizAnswer(btn, q.answer));
+    });
+    document.getElementById("nextQuizBtn").addEventListener("click", () => {
+      quizIndex++;
+      renderQuizQuestion();
+    });
+  }
+
+  function handleQuizAnswer(btn, correctAnswer){
+    if(quizAnswered) return;
+    quizAnswered = true;
+    const chosen = btn.dataset.opt;
+    const allOpts = quizCard.querySelectorAll(".quiz-opt");
+    allOpts.forEach(o => {
+      if(o.dataset.opt === correctAnswer) o.classList.add("correct");
+      else if(o === btn) o.classList.add("wrong");
+    });
+    if(chosen === correctAnswer) quizScore++;
+    document.getElementById("nextQuizBtn").classList.add("show");
+  }
+
+  function speak(){
+    const list = LANGUAGES[currentLang][currentTab];
+    const item = list[lessonIndex];
+    if(!("speechSynthesis" in window)) return;
+    const utter = new SpeechSynthesisUtterance(item.word);
+    utter.lang = LANGUAGES[currentLang].speechLang;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+  });
+
+  prevLessonBtn.addEventListener("click", () => {
+    if(lessonIndex > 0){ lessonIndex--; renderLesson(); }
+  });
+  nextLessonBtn.addEventListener("click", () => {
+    const list = LANGUAGES[currentLang][currentTab];
+    if(lessonIndex < list.length - 1){ lessonIndex++; renderLesson(); }
+  });
+  speakBtn.addEventListener("click", speak);
+
+  startLearningBtn.addEventListener("click", openCourse);
+
+  motBackLink.addEventListener("click", () => {
+    motivationView.classList.add("hidden");
+    pickerView.classList.remove("hidden");
+  });
+
+  backBtn.addEventListener("click", () => {
+    courseView.classList.add("hidden");
+    pickerView.classList.remove("hidden");
+  });
+
+  renderLangGrid();
+  renderMotivationOptions();
+})();
+</script>
+</body>
+</html>
