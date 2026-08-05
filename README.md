@@ -1,10 +1,10 @@
-# Lingo-Trail_CodeAlpha
+# Lingo-Trail
 # Language Learning App
 
-An interactive language learning app built as a task for the CodeAlpha App Development internship.
+An interactive language learning app built.
 
 ## Features
-- Choose from 5 languages: Spanish, French, German, Japanese, and Urdu
+- Choose from 15 languages.
 - Vocabulary and Phrases sections presented as flashcards, with word, pronunciation guide, and translation
 - Listen to each word/phrase spoken aloud using built-in text-to-speech
 - Grammar tips section with short, useful notes for each language
@@ -21,5 +21,4 @@ An interactive language learning app built as a task for the CodeAlpha App Devel
 2. Open `index.html` in any web browser
 3. Pick a language, browse Vocabulary/Phrases/Grammar, and test yourself in the Quiz tab
 
-## About
-Built for the CodeAlpha App Development internship (Task: Language Learning App).
+
